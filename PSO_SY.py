@@ -1,15 +1,47 @@
-# 粒子群优化算法,PSO
+# 粒子群优化算法,PSO:Particle Swarm Optimization
 # 学习笔记
+'''
+0.0 参考
+    - 最优化算法之粒子群算法（PSO）
+        https://blog.csdn.net/daaikuaichuan/article/details/81382794
+1.0 算法分析
+    - 基本思想:通过 群体中个体之间的协作和信息共享 来寻找最优解.
+    - 优势:
+        1. 实现简单
+        2. 没有许多参数要调节
+    - 更新规则:
+        公式一: X_i = X_i + V_i
+        公式二: V_i = W*V_i 
+                + C1*rand()*(pbest_i-X_i) 
+                + C2*rand()*(gbest_i-X_i)
+            // W:惯性因子,其值为负
+                其值较大,全局寻优能力强,局部寻优能力弱
+                其值较小,全局寻优能力弱,局部寻优能力强
+            // rand():介于(0,1)之间的随机数
+            // C1,C2:学习因子,通常C1=C2=2
+            // pbest:自身最好的一个矢量
+            // gbest:全局最好的一个矢量
+2.0 算法流程
+    - 1)开始
+    - 2)随机初始化每个粒子
+    - 3)评估每个粒子并得到全局最优
+    - 4)判断是否满足结束条件
+        (转结束or继续)
+    - 5)更新每个粒子的速度和位置
+    - 6)评估每个粒子的函数适应值,判断当前位置和原位置比哪个更好
+    - 7)更新每个粒子的历史最优位置
+    - 8)更新群体的全局最优位置
+        (转步骤4)
+    - 9)结束
+3.0 算法实现,以Python为例相关库函数
+    np.random.uniform(-1,1,(10,2)):生成10*2的数组,数组元素大小[-1,1)
+
+
+'''
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-'''
-np.random.uniform(-1,1,(10,2)):生成10*2的数组,数组元素大小[-1,1)
-
-
-
-'''
 
 class DPSO(object):
     def __init__(self, population_size, seed_size, max_steps):
