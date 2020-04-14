@@ -1,3 +1,6 @@
+# 离散粒子群优化算法,DPSO
+# Python代码
+
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
 import networkx as nx
