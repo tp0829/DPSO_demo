@@ -34,8 +34,15 @@
         (转步骤4)
     - 9)结束
 3.0 算法实现,以Python为例相关库函数
-    np.random.uniform(-1,1,(10,2)):生成10*2的数组,数组元素大小[-1,1)
-
+    - import numpy as np
+        np.random.uniform(-1,1,(10,2)):生成10*2的数组,数组元素大小[-1,1)
+        np.random.rand(10,2):生成10*2的数组,数组元素大小随机默认范围[0,1)
+        np.sum(x,axis=1):axis=0,往里看0层,=1,往里看1层
+        np.argmin(x):返回数组x中最小元素的下标
+    - import matplotlib.pyplot as plt
+        plt.figure():
+        plt.show():
+        plt.clf():清除所有轴,窗口打开,重复利用窗口的,已达到动画显示的效果
 
 '''
 
@@ -44,32 +51,36 @@ import matplotlib.pyplot as plt
 
 
 class DPSO(object):
+    # 初始化每个粒子
     def __init__(self, population_size, seed_size, max_steps):
         self.n = population_size  # 粒子群大小
         self.gmax = max_steps  # 最大迭代次数
         self.w = 0.6  # 惯性权重
         self.c1 = self.c2 = 2
-        self.k=seed_size    #种子集大小
-
-        # 初始化粒子群位置        
+        self.k=seed_size    # 种子集大小 ## 没有使用到
         self.dim = 2  # 搜索空间的维度
         self.x_bound = [-10, 10]  # 解空间范围
+        ''' 生成n*dim的数组,数组元素大小[-10,10) '''
         self.x = np.random.uniform(self.x_bound[0], self.x_bound[1],
-                                   (self.n, self.dim))  
+                                   (self.n, self.dim))  # 初始化粒子群的位置
+        ''' 生成n*dim的数组,数组元素随机大小[0,1) '''
         self.v = np.random.rand(self.n, self.dim)  # 初始化粒子群速度
         fitness = self.calculate_fitness(self.x)
         self.p = self.x  # 个体的最佳位置
+        '''np.argmin(x):返回数组x中最小元素的下标'''
         self.pg = self.x[np.argmin(fitness)]  # 全局最佳位置
         self.individual_best_fitness = fitness  # 个体的最优适应度
         self.global_best_fitness = np.min(fitness)  # 全局最佳适应度
 
+    # 计算适应度
     def calculate_fitness(self, x):
+        '''np.sum(x,axis=1):axis=0,往里看0层,=1,往里看1层'''
         return np.sum(np.square(x), axis=1)
 
     def evolve(self):
         plt.figure()
         for _ in range(self.gmax):
-            '''np.random.rand(10,2):生成10*2的数组'''
+            ''' 生成n*dim的数组,数组元素随机大小[0,1) '''
             r1 = np.random.rand(self.n, self.dim)
             r2 = np.random.rand(self.n, self.dim)
             # 更新速度和权重
