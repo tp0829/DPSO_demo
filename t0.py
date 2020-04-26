@@ -3,11 +3,11 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-G_1 = nx.read_edgelist("twitter.txt",create_using=nx.Graph())  #读取文件，构建网络 
-G_2 = nx.read_edgelist("facebook.txt",create_using=nx.Graph())  #读取文件，构建网络 
-G_3 = nx.read_edgelist("hamster.txt",create_using=nx.Graph())  #读取文件，构建网络    
+G_1 = nx.read_edgelist("twitter.txt",create_using=nx.Graph())  #读取文件，构建网络
+G_2 = nx.read_edgelist("facebook.txt",create_using=nx.Graph())  #读取文件，构建网络
+G_3 = nx.read_edgelist("hamster.txt",create_using=nx.Graph())  #读取文件，构建网络
 
-len(G_1.nodes()) 
+len(G_1.nodes())
 len(G_1.edges())
 
 '''
@@ -18,7 +18,7 @@ len(G_1.edges())
     国内的数据集:(暂无)
         小:
         大:
-        
+
 2.改进思路:
     - 数据量小的时候可以使用文中提出的DPSO算法
         - 通过"局部搜索"缩短了计算量
