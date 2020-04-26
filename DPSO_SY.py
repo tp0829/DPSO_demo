@@ -19,11 +19,11 @@
             6.k //种子集的大小
         第一步:
             初始化
-                position vector: 
+                position vector:
                     X ← Degree_Based_Initialization(G,n,k);
-                Pbest vector: 
+                Pbest vector:
                     Pbest ← Degree_Based_Initialization(G,n,k);
-                velocity vector: 
+                velocity vector:
                     V ← 0;
         第二步:
             选择全局最佳位置向量 Gbest
@@ -32,7 +32,7 @@
             开始循环,设置g=0;
                 Step3.1 Update V;
                 Step3.2 Update X;
-                Step3.3 Update the Pbest 
+                Step3.3 Update the Pbest
                     and select out the best particle Gbest∗ in the current iteration;
                 Step3.4 Employ the local search operation on Gbest∗: Gbest′ ← Local_Search(Gbest∗); Step3.5 Update the Gbest: Gbest ← Max(Gbest′, Gbest)
         第四步:
@@ -42,8 +42,8 @@
 
 3.0 算法实现,以Python为例相关库函数
     - import networkx as nx
-        G = nx.read_edgelist("twitter.txt",create_using=nx.Graph())  #读取文件，构建网络 
-        G.nodes() 
+        G = nx.read_edgelist("twitter.txt",create_using=nx.Graph())  #读取文件，构建网络
+        G.nodes()
         G.edges()
         G.neighbors('0') #注节点是"字符串"型
 
@@ -65,7 +65,7 @@
 '''
 
 
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import networkx as nx
 import time
@@ -76,7 +76,7 @@ import matplotlib.pyplot as plt
 def IC_model(g,S,mc=10000,p=0.01):
     spread = []
     for _ in range(mc): # i
-        # 模拟传播过程      
+        # 模拟传播过程
         new_active, Au = S[:], S[:]
         while new_active:
             new_ones = []
@@ -86,22 +86,22 @@ def IC_model(g,S,mc=10000,p=0.01):
                     if random.random() <= p:
                         new_ones.append(nb)
             new_active = list(set(new_ones))
-            Au += new_active 
+            Au += new_active
         spread.append(len(Au))
     return np.mean(spread)
 
 
 ## X 中保存 由种子集定义的 粒子位置
 def SHD(G,all_nodes,K):
-    X = [ ] 
-    
+    X = [ ]
+
     candidate = sorted(all_nodes,key=G.nodes,reverse=True)
     X = candidate[:K]
     for ele_1 in range(K):
         if random.random() > 0.5:
             for ele_2 in random.sample(set(all_nodes)-set(X),1):
                 X[ele_1] = ele_2
-    
+
     return X
 
 ## pop 初始种群大小
@@ -112,7 +112,7 @@ def population_initialization(G,all_nodes,pop,K):
     return P
 
 def Neighbor_Nodeset(G,S):
-    neighbors = [ ]  
+    neighbors = [ ]
     for i in S:
         neighbors += Neighbor_nodes(G,i)
     neighbors = list(set(neighbors))
@@ -124,15 +124,15 @@ def Neighbor_nodes(G,u):
 def Eval(G,S,K):
     Neighbors = [ ]
     Neighbors = Neighbor_Nodeset(G,S)
-    
+
     fitness = K
     L = list(set(Neighbors) - set(S))
     for TIME in L:
         fitness += 1 - (1 - 0.01)**len(set(G.neighbors(TIME)) & set(S))
     return fitness
 
-def local_search(G,candidate,G_best,diction,K): 
-    
+def local_search(G,candidate,G_best,diction,K):
+
     N_current = G_best
     N_current_copy = N_current.copy()
     for k in range(K):
@@ -150,14 +150,14 @@ def local_search(G,candidate,G_best,diction,K):
                 flag = True
         N_current_copy = N_current.copy()
     return N_current_copy
- 
+
 def Evaluation(G,diction,S,K):
     if diction.get(tuple(sorted(S,key=int,reverse=True))) != None:
         evaluation = diction.get(tuple(sorted(S,key=int,reverse=True)))
     else:
         evaluation = Eval(G,S,K)
         diction[tuple(sorted(S,key=int,reverse=True))] = evaluation
-    return evaluation   
+    return evaluation
 
 def update_Velocity(Pbest,Gbest,V,X,K,c1,c2,w,r1,r2):
     key_1 = [ ]
@@ -173,7 +173,7 @@ def update_Velocity(Pbest,Gbest,V,X,K,c1,c2,w,r1,r2):
         V_1.append(0)
     for s in key_1:
         V_1[s] = 1
-    
+
     for n in range(K):
         if X[n] not in intersaction_2:
             key_2.append(n)
@@ -181,7 +181,7 @@ def update_Velocity(Pbest,Gbest,V,X,K,c1,c2,w,r1,r2):
         V_2.append(0)
     for e in key_2:
         V_2[e] = 1
-    
+
     for t in range(K):
         V[t] = w*V[t]+c1*r1*V_1[t] + c2*r2*V_2[t]
     for x in range(K):
@@ -190,10 +190,10 @@ def update_Velocity(Pbest,Gbest,V,X,K,c1,c2,w,r1,r2):
         else:
             V[x] = 1
     return V
-    
+
 def update_Position(G,all_nodes,Pbest,Gbest,V,X,K,c1,c2,w,r1,r2):
     V = update_Velocity(Pbest,Gbest,V,X,K,c1,c2,w,r1,r2)
-    for j in range(K): 
+    for j in range(K):
         if V[j] == 1:
             for i in random.sample(set(all_nodes)-set(X),1):
                 X[j] = i
@@ -219,21 +219,21 @@ def main():
     C = [ ]
     population_dict = { }            #字典，用来存储个体的适应度值
     P = [ ]
-    P_best = [ ]   
+    P_best = [ ]
 
     #开始时间
     start_time = time.clock()
     pop = 100
 
     ##种群初始化,位置初始化,每个粒子的位置向量数为 K
-    P = population_initialization(G,all_nodes,pop,K)  
+    P = population_initialization(G,all_nodes,pop,K)
 
     #PSO算法的迭代过程
     RESULT_1 = [ ]
     RESULT_2 = [ ]
-    P_best = population_initialization(G,all_nodes,pop,K)    
+    P_best = population_initialization(G,all_nodes,pop,K)
     G_best = sorted(P_best,key = lambda x:Evaluation(G,population_dict,x,K),reverse = True)[0]
-    
+
     ##初始速度,全设置为0,每个粒子的速度向量数为 K
     Velocity = [ ]
     for _ in range(pop): # Index_3
@@ -245,7 +245,7 @@ def main():
     g = 1
     while g <= maxgen:
         #更新速度和位置
-        for j in range(len(P)):       
+        for j in range(len(P)):
             P[j],Velocity[j] = update_Position(G,all_nodes,P_best[j],G_best,Velocity[j],P[j],K,c1,c2,w,r1,r2)
         #更新P_best
         for i in range(len(P)):
@@ -253,24 +253,24 @@ def main():
                 P_best[i] = P[i]
         #更新G_best
         G_best_candidate = sorted(P_best,key = lambda x:Evaluation(G,population_dict,x,K),reverse = True)[0]
-        
+
         G_best_candidate = local_search(G,all_nodes,G_best_candidate,population_dict,K)
-        
+
         if Evaluation(G,population_dict,G_best,K) < Evaluation(G,population_dict,G_best_candidate,K):
             G_best = G_best_candidate
-        
+
         diffusion_result = 0
         diffusion_result = Evaluation(G,population_dict,G_best,K)
         RESULT_1.append(g)
         RESULT_2.append(round(diffusion_result,2))
-        
+
         #print('第',g,'次迭代')
         g += 1
         end_time = time.clock()
-        
+
         runningtime = end_time - start_time
         C.append(runningtime)
-        
+
         diffusion_result_list_final = 0
         diffusion_result_list_final = IC_model(G,G_best)
         B.append(diffusion_result_list_final)
