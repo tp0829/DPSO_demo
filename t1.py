@@ -33,3 +33,7 @@ for i in g3:
 a1 = sorted(n1, reverse=True)
 a2 = sorted(n2, reverse=True)
 a3 = sorted(n3, reverse=True)
+
+'''
+networkx.classes.function.subgraph(G, nbunch)
+'''
