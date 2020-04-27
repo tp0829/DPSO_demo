@@ -66,7 +66,7 @@ def DPSO(G, n, gmax, w, c1, c2, k):
 
 
     # 开始时间
-    start_time = time.clock()
+    start_time = time.perf_counter()
 
     # 图的节点集,按度从大到小排列
     all_nodes = sorted(list(G.nodes()),key=lambda x:len(list(G.neighbors(x))),reverse=True)
@@ -119,19 +119,19 @@ def DPSO(G, n, gmax, w, c1, c2, k):
             Gbest_fitness = Gbest_candidate_fitness
         g += 1
         # 结束时间
-        end_time = time.clock()
+        end_time = time.perf_counter()
 
         runningtime = end_time - start_time
 
         C = []
         C.append(runningtime)
-        print("gen:%d 时间:%d", g, round(np.mean(C), 1))
+        print("gen:%d 时间:%d"%(g, round(np.mean(C), 1)))
 
     # 种子集
     return Gbest
 
 def main():
-    file_name = "facebook.txt"
+    file_name = "hamster.txt"
     G = nx.read_edgelist(file_name, create_using=nx.Graph())  # 网络,读取文件构建网络
     GS = community_detection(G)
 
@@ -143,9 +143,11 @@ def main():
     k = 10  # 种子集大小
 
     S = []  # 种子集
-    print("网络:%s",file_name)
+    print("网络:%s" % file_name)
+    ii = 0
     for i in GS:
-        print("子网%d/%d:",i,len(GS))
+        ii += 1
+        print("子网%d/%d:"%(ii,len(GS)))
         S.append(DPSO(i, n, gmax, w, c1, c2, k))
     S=sorted(S,key=lambda x: EDV(G, x, k), reverse=True)
     while len(S) > k:
@@ -154,8 +156,7 @@ def main():
     diffusion_result_list_final = IC_model(G, S)
     B = []
     B.append(diffusion_result_list_final)
-    print("网络:", file_name, "种子集大小:", k, "影响力:", round(np.mean(B), 1))
+    print("网络:%s 种子集大小:%d 影响力:%d"%(file_name ,k ,round(np.mean(B), 1)))
 
 if __name__ == '__main__':
     main()
-
